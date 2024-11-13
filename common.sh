@@ -894,37 +894,6 @@ function firmware_settings() {
 
 	__info_msg "CPU架构：$ARCHITECTURE"
 	
-	# 内核版本
-	__yellow_color "开始获取内核版本信息、替换内核等..."
-	KERNEL_PATCHVER="$(grep "KERNEL_PATCHVER" "$HOME_PATH/target/linux/$TARGET_BOARD/Makefile" |grep -Eo "[0-9]+\.[0-9]+")"
-	
-	# 内核替换
-	if [[ -n "$NEW_KERNEL_PATCHVER" ]]; then
-		if [[ "$NEW_KERNEL_PATCHVER" == "0" ]]; then
-			__info_msg "编译固件内核：[ $KERNEL_PATCHVER ]"
-		elif [[ `ls -1 "$HOME_PATH/target/linux/$TARGET_BOARD" |grep -c "kernel-$NEW_KERNEL_PATCHVER"` -eq '1' ]]; then
-			sed -i "s/${KERNEL_PATCHVER}/${NEW_KERNEL_PATCHVER}/g" $HOME_PATH/target/linux/$TARGET_BOARD/Makefile
-			KERNEL_PATCHVER=$NEW_KERNEL_PATCHVER
-			__success_msg "内核[ $NEW_KERNEL_PATCHVER ]更换完成"
-		else
-			__error_msg "没发现与$TARGET_PROFILE机型对应[ $NEW_KERNEL_PATCHVER ]内核，使用默认内核[ $KERNEL_PATCHVER ]编译"
-		fi
-	else
-		__info_msg "编译固件内核：[ $KERNEL_PATCHVER ]"
-	fi
-	
-	local kernel_version_file="kernel-$KERNEL_PATCHVER"
-	if [[ -f "$HOME_PATH/include/$kernel_version_file" ]]; then
-		LINUX_KERNEL=$(egrep -o "$KERNEL_PATCHVER\.[0-9]+" $HOME_PATH/include/$kernel_version_file)
-		[[ -z $LINUX_KERNEL ]] && LINUX_KERNEL="unknown"
-	else
-		LINUX_KERNEL=$(egrep -o "$KERNEL_PATCHVER\.[0-9]+" $HOME_PATH/include/kernel-version.mk)
-		[[ -z $LINUX_KERNEL ]] && LINUX_KERNEL="unknown"
-	fi
-	
-	echo "::notice title=内核版本::$LINUX_KERNEL"
-	echo "::notice title=固件机型::$TARGET_PROFILE"
-	
 	# BIOS引导模式
 	if [[ $BIOS_MODE =~ (uefi|UEFI|Uefi) ]]; then
 		sed -i '/CONFIG_GRUB_IMAGES/d' $HOME_PATH/.config > /dev/null 2>&1
