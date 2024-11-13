@@ -968,8 +968,8 @@ function firmware_settings() {
 
 	# release标签
 	if [[ "$FIRMWARE_TYPE" == "lxc" ]]; then
-		RELEASE_TAG="$SOURCE-$TARGET_PROFILE-lxc"
-		AUTOUPDATE_TAG="AutoUpdate-$TARGET_BOARD-lxc"
+		RELEASE_TAG="$SOURCE-$TARGET_PROFILE-lxc-nk"
+		AUTOUPDATE_TAG="AutoUpdate-$TARGET_BOARD-lxc-nk"
 	else
 		RELEASE_TAG="$SOURCE-$TARGET_PROFILE"
 		AUTOUPDATE_TAG="AutoUpdate-$TARGET_BOARD"
