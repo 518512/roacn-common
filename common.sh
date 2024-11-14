@@ -75,7 +75,7 @@ function parse_settings() {
 		SOURCE_URL="https://github.com/coolsnowwolf/lede"
 		SOURCE="lede"
 		SOURCE_OWNER="Lean's"
-		LUCI_EDITION="18.06"
+		LUCI_EDITION="master"
 	;;
 	openwrt|Openwrt|OpenWrt|OpenWRT|OPENWRT|official|Official|OFFICIAL)
 		SOURCE_URL="https://github.com/openwrt/openwrt"
@@ -177,8 +177,8 @@ function parse_settings() {
 ################################################################################################################
 function notice_begin() {
 	if [[ "$NOTICE_TYPE" == "TG" ]]; then
-		curl -k --data chat_id="$TELEGRAM_CHAT_ID" --data "text=✨主人✨：您正在使用【$REPOSITORY】仓库【$MATRIX_TARGET】文件夹编译【$SOURCE-$LUCI_EDITION】固件,请耐心等待...... 😋" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage"
-	elif [[ "$NOTICE_TYPE" == "PUSH" ]]; then
+		curl -k --data chat_id="$TELEGRAM_CHAT_ID" --data "text=正在编译【$MATRIX_TARGET】固件,请耐心等待...... 😋" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage"
+ elif [[ "$NOTICE_TYPE" == "PUSH" ]]; then
 		curl -k --data token="$PUSH_PLUS_TOKEN" --data title="开始编译【$SOURCE-$MATRIX_TARGET】" --data "content=✨主人✨：您正在使用【$REPOSITORY】仓库【$MATRIX_TARGET】文件夹编译【$SOURCE-$LUCI_EDITION】固件,请耐心等待...... 😋" "http://www.pushplus.plus/send"
 	fi
 }
@@ -188,7 +188,7 @@ function notice_begin() {
 ################################################################################################################
 function notice_end() {
 	if [[ "$NOTICE_TYPE" == "TG" ]]; then
-		curl -k --data chat_id="$TELEGRAM_CHAT_ID" --data "text=🎉 我亲爱的✨主人✨：您使用【$REPOSITORY】仓库【$MATRIX_TARGET】文件夹编译的【$FIRMWARE_NAME_PREFIX】固件顺利编译完成了！💐 https://github.com/$GITHUB_REPOSITORY/releases" "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage"
+		curl -k --data chat_id="$TELEGRAM_CHAT_ID" --data "text=🎉 【$MATRIX_TARGET】件顺利编译完成了！💐 " "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage"
 	elif [[ "$NOTICE_TYPE" == "PUSH" ]]; then
 		curl -k --data token="$PUSH_PLUS_TOKEN" --data title="【$SOURCE-$TARGET_PROFILE】编译成功" --data "content=🎉 我亲爱的✨主人✨：您使用【$REPOSITORY】仓库【$MATRIX_TARGET】文件夹编译的【$FIRMWARE_NAME_PREFIX】固件顺利编译完成了！💐 https://github.com/$GITHUB_REPOSITORY/releases" "http://www.pushplus.plus/send"
 	fi
@@ -1072,7 +1072,7 @@ function compile_info() {
 	__blue_color "源码分支: $SOURCE_BRANCH"
 	__blue_color "源码作者: $SOURCE_OWNER"
 	__blue_color "内核版本: $LINUX_KERNEL"
-	__blue_color "LUCI版本: $LUCI_EDITION"
+	__blue_color "LUCI版本: $"
 	__blue_color "机型信息: $TARGET_PROFILE"
 	__blue_color "CPU 架构: $ARCHITECTURE"
 	__blue_color "固件作者: $GITHUB_ACTOR"
@@ -1345,7 +1345,7 @@ function organize_firmware() {
 	fi
 	__info_msg "重命名固件名称"
 	if [[ `ls -1 | grep -c "armvirt"` -eq '0' ]]; then
-		rename -v "s/^openwrt/$COMPILE_DATE_MD-$SOURCE-$LUCI_EDITION-$LINUX_KERNEL/" *
+		rename -v "s/^openwrt/$COMPILE_DATE_MD-$SOURCE-$-$LINUX_KERNEL/" *
 	fi
 	
 	release_info	
@@ -1363,7 +1363,7 @@ function release_info() {
 	sed -i "s#release_device#${TARGET_PROFILE}#" $RELEASEINFO_MD > /dev/null 2>&1
 	sed -i "s#default_ip#${release_ipaddr}#" $RELEASEINFO_MD > /dev/null 2>&1
 	sed -i "s#default_password#-#" $RELEASEINFO_MD > /dev/null 2>&1
-	sed -i "s#release_source#${SOURCE}-${LUCI_EDITION}#" $RELEASEINFO_MD > /dev/null 2>&1
+	sed -i "s#release_source#${SOURCE}-${}#" $RELEASEINFO_MD > /dev/null 2>&1
 	sed -i "s#release_kernel#${LINUX_KERNEL}#" $RELEASEINFO_MD > /dev/null 2>&1
 	sed -i "s#\/repository\/#\/${GITHUB_REPOSITORY}\/#" $RELEASEINFO_MD > /dev/null 2>&1
 	sed -i "s#\/branch\/#\/${GITHUB_REPOSITORY_REFNAME}\/#" $RELEASEINFO_MD > /dev/null 2>&1
